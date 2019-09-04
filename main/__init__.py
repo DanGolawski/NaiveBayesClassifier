@@ -54,6 +54,16 @@ def calculate_mean_stdev(dataset):
 
 def summarize_by_class(dataset):
     no, yes = separate_by_class(dataset)
+    return calculate_mean_stdev(no), calculate_mean_stdev(yes)
+
+
+def calculate_probability(x, mean, stdev):
+    exponent = math.exp(-(math.pow(x-mean,2)/(2*math.pow(stdev,2))))
+    return (1/(math.sqrt(2*math.pi)*stdev))*exponent
+
+
+
+
 
 def controller():
     # dataset read from csv file
@@ -62,7 +72,6 @@ def controller():
     train, test = split_data(dataset, 0.33)  # train : test = 1 : 2
     # tables of healthy people and the ones with diabetes
     no, yes = separate_by_class(dataset)
-
 
 
 
