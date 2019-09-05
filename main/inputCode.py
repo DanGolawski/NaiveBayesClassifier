@@ -54,7 +54,7 @@ def calculate_mean_stdev_for_every_attribute(dataset):
 
 
 def calculate_probability(x, mean, stdev):
-    exponent = math.exp(-(math.pow(x-mean,2)/(2*math.pow(stdev,2))))
+    exponent = math.exp(-(math.pow(x-mean, 2)/(2*math.pow(stdev, 2))))
     return (1/(math.sqrt(2*math.pi)*stdev))*exponent
 
 
@@ -67,39 +67,50 @@ def calculate_probability_for_class(item, dataset):
         prob *= x
     return prob
 
-def result(no, yes):
-    if no > yes:
-        return 0
-    return 1
 
-
-def get_accuracy(answers, test):
-    good = 0
-    for i in range(len(answers)):
-        if int(test[i][8]) == answers[i]:
-            good += 1
-    return round(good*100/len(test), 1)
-
-
-def controller_for_whole_data():
-    # dataset read from csv file
+def controller_for_single_item(item):
     dataset = read_file('diabetes.csv')
-    # train and test dataset given from previous dataset
-    train, test = split_data(dataset, 0.33)  # train : test = 1 : 2
-    # tables of healthy people and the ones with diabetes
-    no, yes = separate_by_class(train)
-    # calculated means and standard deviations for every attribute in class dataset
+    no, yes = separate_by_class(dataset)
     mean_stdev_for_no = calculate_mean_stdev_for_every_attribute(no)
     mean_stdev_for_yes = calculate_mean_stdev_for_every_attribute(yes)
-    answers = []
-    for i in test:
-        prob_no = calculate_probability_for_class(i, mean_stdev_for_no)
-        prob_yes = calculate_probability_for_class(i, mean_stdev_for_yes)
-        answers.append(result(prob_no, prob_yes))
-
-    return get_accuracy(answers, test)
+    prob_no = calculate_probability_for_class(item, mean_stdev_for_no)
+    prob_yes = calculate_probability_for_class(item, mean_stdev_for_yes)
+    if prob_no > prob_yes:
+        return 'negative'
+    return 'positive'
 
 
-accuracy = controller_for_whole_data()
+# print(controller_for_single_item())
 
-print("accuracy of this algorithm is " + str(accuracy) + "%")
+person = []
+print("Pregnancies : ")
+person.append(float(input()))
+
+print("Glucose : ")
+person.append(float(input()))
+
+print("Blood Pressure : ")
+person.append(float(input()))
+
+print("Skin Thickness: ")
+person.append(float(input()))
+
+print("Insulin: ")
+person.append(float(input()))
+
+print("BMI : ")
+person.append(float(input()))
+
+print("DiabetesPedigreeFunction: ")
+person.append(float(input()))
+
+print("Age : ")
+person.append(float(input()))
+
+person.append(0)
+
+print('\n\n' + 'RESULT : ' + controller_for_single_item(person))
+
+
+
+
