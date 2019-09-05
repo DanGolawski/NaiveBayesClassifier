@@ -42,7 +42,7 @@ def standard_deviation(numbers):
     return math.sqrt(variance)
 
 
-def calculate_mean_stdev(dataset):
+def calculate_mean_stdev_for_every_attribute(dataset):
     means_stdevs = []
     for a in range(len(dataset[0])):
         attribute_tab = []
@@ -52,9 +52,9 @@ def calculate_mean_stdev(dataset):
     return means_stdevs[:-1]
 
 
-def summarize_by_class(dataset):
-    no, yes = separate_by_class(dataset)
-    return calculate_mean_stdev(no), calculate_mean_stdev(yes)
+# def get_mean_and_stdev_for_every_attribute_by_class(dataset):
+#     no, yes = separate_by_class(dataset)
+#     return calculate_mean_stdev(no), calculate_mean_stdev(yes)
 
 
 def calculate_probability(x, mean, stdev):
@@ -62,7 +62,27 @@ def calculate_probability(x, mean, stdev):
     return (1/(math.sqrt(2*math.pi)*stdev))*exponent
 
 
+def calculate_probability_for_class(item, dataset):
+    values = []
+    for i in range(len(dataset)):
+        values.append(calculate_probability(item[i], dataset[i][0], dataset[i][1]))
+    prob = 1
+    for x in values:
+        prob *= x
+    return prob
 
+def result(no, yes):
+    if no > yes:
+        return 0
+    return 1
+
+
+def getAccuracy(answers, test):
+    good = 0
+    for i in range(len(answers)):
+        if int(test[i][8]) == answers[i]:
+            good += 1
+    return round(good*100/len(test), 1)
 
 
 def controller():
@@ -71,11 +91,21 @@ def controller():
     # train and test dataset given from previous dataset
     train, test = split_data(dataset, 0.33)  # train : test = 1 : 2
     # tables of healthy people and the ones with diabetes
-    no, yes = separate_by_class(dataset)
+    no, yes = separate_by_class(train)
+    # calculated means and standard deviations for every attribute in class dataset
+    mean_stdev_for_no = calculate_mean_stdev_for_every_attribute(no)
+    mean_stdev_for_yes = calculate_mean_stdev_for_every_attribute(yes)
+    answers = []
+    for i in test:
+        prob_no = calculate_probability_for_class(i, mean_stdev_for_no)
+        prob_yes = calculate_probability_for_class(i, mean_stdev_for_yes)
+        answers.append(result(prob_no, prob_yes))
+
+    return getAccuracy(answers, test)
 
 
 
-# read_file('diabetes.csv')
-# controller()
 
-# XXXXXXXXXXXXXXXXxxx
+accuracy = controller()
+
+print("accuracy of this algorithm is " + str(accuracy) + "%")
